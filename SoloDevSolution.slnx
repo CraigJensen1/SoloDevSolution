@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="BlazorWebAssemblyStandalone/BlazorWebAssemblyStandalone.csproj" />
+  <Project Path="ClassLibrary/ClassLibrary.csproj" />
+  <Project Path="ConsoleApp1/ConsoleApp1.csproj" />
+  <Project Path="ConsoleApp2/ConsoleApp2.csproj" />
+  <Project Path="ConsoleApp3/ConsoleApp3.csproj" />
+</Solution>
