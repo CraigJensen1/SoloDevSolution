@@ -14,8 +14,8 @@ class Program
             Console.WriteLine("1. Project1");
             Console.WriteLine("2. Project2");
             Console.WriteLine("3. Project3");
-            Console.WriteLine("4. Project3");
-            Console.WriteLine("5. Project3");
+            Console.WriteLine("4. Project4");
+            Console.WriteLine("5. Astrid");
             Console.WriteLine("E. Exit");
             Console.Write("Enter your choice: ");
 

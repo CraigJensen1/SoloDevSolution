@@ -8,4 +8,13 @@
 
         }
     }
+
+    public class UnitTestAstrid
+    {
+        [Fact]
+        public void Test1()
+        {
+            
+        }
+    }
 }
