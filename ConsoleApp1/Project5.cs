@@ -1,4 +1,7 @@
-﻿namespace ConsoleApp;
+﻿using ClassLibrary;
+using static ClassLibrary.Astrid;
+
+namespace ConsoleApp;
 
 internal static class Project5
 {
