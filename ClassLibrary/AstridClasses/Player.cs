@@ -9,8 +9,10 @@ namespace SaveLogic
         public int CurrentHealth { get; set; }
         public int Strength { get; set; }
         public int Defense { get; set; }
+        public (int, int) MapPosition { get; set; }
 
         public Player() { }
+
         public Player(string name, Gender gender)
         {
             Name = name;
@@ -20,11 +22,22 @@ namespace SaveLogic
             CurrentHealth = 20;
             Strength = 5;
             Defense = 1;
+            MapPosition = (4, 8);
         }
 
         public Player GetInfo()
         {
-            return new Player();
+            return new Player
+            {
+                Name = Name,
+                Gender = Gender,
+                Inventory = Inventory,
+                MaxHealth = MaxHealth,
+                CurrentHealth = CurrentHealth,
+                Defense = Defense,
+                MapPosition = MapPosition,
+                Strength = Strength,
+            };
         }
 
         public int Attack()
