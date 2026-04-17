@@ -1,0 +1,13 @@
+{
+  "Player": {
+    "Name": "Astrid",
+    "Gender": 0,
+    "Inventory": [],
+    "MaxHealth": 20,
+    "CurrentHealth": 20,
+    "Strength": 5,
+    "Defense": 1
+  },
+  "StoryProgress": 0,
+  "MapSecretsDiscovered": []
+}
