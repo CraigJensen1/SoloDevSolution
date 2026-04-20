@@ -22,7 +22,7 @@ namespace SaveLogic
             CurrentHealth = 20;
             Strength = 5;
             Defense = 1;
-            MapPosition = (4, 8);
+            MapPosition = (3, 7);
         }
 
         public Player GetInfo()

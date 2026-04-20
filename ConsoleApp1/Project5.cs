@@ -10,7 +10,11 @@ internal static class Project5
     {
         Console.Clear();
         // Console.WriteLine("Astrid's Project");
-        // Save save = new Save(new Player("Astrid", Gender.Female));
-        // save.SaveProgress(1);
+        RenderMainMenu();
+        // Console.ReadKey(); //displays key
+        // Console.ReadKey(true); //doesn't display key
+        // Console.ReadKey(false); //displays key
+        // Console.ReadLine();
+        Console.Clear();
     }
 }
