@@ -1,7 +1,85 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<h1>Daily Water Intake Tracker</h1>
 
-<h1>Hello, world!</h1>
+<h3>Add Water</h3>
+<input type="number" @bind="cupsInput" />
+<button @onclick="AddWater">Add Water</button>
 
-Welcome to your new app.
+<h3>Set Goal</h3>
+<input type="number" @bind="goalInput" />
+<button @onclick="SetGoal">Set Goal</button>
+
+<br /><br />
+
+<button @onclick="ResetWater">Reset Water</button>
+
+<h3>Progress</h3>
+<p>Water Total: @waterTotal cups</p>
+<p>Goal: @waterGoal cups</p>
+
+@if (waterGoal > 0)
+{
+    int remaining = waterGoal - waterTotal;
+
+    if (remaining > 0)
+    {
+        <p>You need @remaining more cups.</p>
+    }
+    else
+    {
+        <p>Goal reached or exceeded!</p>
+    }
+}
+else
+{
+    <p>Please set a goal first.</p>
+}
+
+<p>@message</p>
+
+@code {
+    int waterTotal = 0;
+    int waterGoal = 0;
+
+    int cupsInput;
+    int goalInput;
+
+    string message = "";
+
+    void AddWater()
+    {
+        if (cupsInput > 0)
+        {
+            waterTotal += cupsInput;
+            message = "Water added!";
+        }
+        else
+        {
+            message = "Invalid input. Enter a positive number.";
+        }
+
+        cupsInput = 0;
+    }
+
+    void SetGoal()
+    {
+        if (goalInput > 0)
+        {
+            waterGoal = goalInput;
+            message = "Goal set!";
+        }
+        else
+        {
+            message = "Invalid goal. Enter a positive number.";
+        }
+
+        goalInput = 0;
+    }
+
+    void ResetWater()
+    {
+        waterTotal = 0;
+        message = "Water has been reset for a new day.";
+    }
+}
