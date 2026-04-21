@@ -6,7 +6,8 @@ namespace ClassLibrary
 
     public static class Astrid
     {
-        public static Save MainSave = new();
+        public static Save MainSave;
+        public static char[][] Map;
 
         public static void RenderMainMenu()
         {
@@ -23,12 +24,37 @@ namespace ClassLibrary
 
         public static void RenderMap()
         {
-            //
+            Console.Clear();
+            bool exited = false;
+            var mapLines = File.ReadAllLines("./ClassLibrary/AstridClasses/Maps/StartMap.txt");
+            Map = new char[mapLines.Length][];
+            for (int i = 0; i < mapLines.Length; i++)
+            {
+                Map[i] = mapLines[i].ToCharArray();
+            }
+            // Editing the map to change for secrets goes here.
+            foreach (char[] mapRow in Map)
+            {
+                Console.WriteLine(mapRow);
+            }
+            (int, int) playerMapPosition = MainSave.Player.MapPosition;
+            Console.SetCursorPosition(playerMapPosition.Item2, playerMapPosition.Item1);
+            while (!exited)
+            {
+                exited = ProcessInput(InputType.Map, Console.ReadKey(true));
+            }
         }
 
-        public static void RenderSaveMenu()
+        public static bool RenderSaveMenu()
         {
-            //
+            // foreach (char[] mapRow in Map)
+            // {
+            //     Console.WriteLine(mapRow);
+            // }
+            // (int, int) playerMapPosition = MainSave.Player.MapPosition;
+            // Console.SetCursorPosition(playerMapPosition.Item2, playerMapPosition.Item1);
+            // return false;
+            return true;
         }
 
         public static bool ProcessInput(InputType type, ConsoleKeyInfo input)
@@ -99,27 +125,28 @@ namespace ClassLibrary
                     {
                         case 2: // New Game
                         {
-                            // MainSave.Player = new Player("Astrid", Gender.Female);
-                            // RenderMap();
-                            return false;
+                            MainSave = new Save(new Player("Astrid", Gender.Female));
+                            RenderMap();
+                            break;
                         }
                         case 3: // Continue
                         {
                             // MainSave.LoadProgress(1);
-                            return false;
+                            break;
                         }
                         case 4: // Exit
                         {
-                            return true;
+                            break;
                         }
                         default: // Idk
                         {
                             Console.Clear();
                             Console.WriteLine("How and what did you do?");
                             Console.ReadLine();
-                            return true;
+                            break;
                         }
                     }
+                    return true;
                 }
                 case ConsoleKey.Escape:
                 {
@@ -181,11 +208,11 @@ namespace ClassLibrary
                 }
                 case ConsoleKey.Enter:
                 {
-                    return true;
+                    return false;
                 }
                 case ConsoleKey.Escape:
                 {
-                    return false;
+                    return RenderSaveMenu();
                 }
                 default:
                 {

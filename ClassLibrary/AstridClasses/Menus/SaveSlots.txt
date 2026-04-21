@@ -9,3 +9,4 @@ Slot 7:
 Slot 8: 
 Slot 9: 
 ----------------------
+Escape to leave

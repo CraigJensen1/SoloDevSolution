@@ -1,5 +1,6 @@
-----Save Game?----
-       Save
-    Save & Exit
-Exit without Saving
-------------------
+------Save Game?------
+         Save
+      Save & Exit
+  Exit without Saving
+----------------------
+Escape to leave
