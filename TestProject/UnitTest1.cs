@@ -69,6 +69,9 @@ namespace TestProject
             Assert.Equal(expectedMapRow, Map[3]);
             char[] characters = [ ',', '.', 'i' ];
             Assert.Equal(",.i", characters); // This test passes. How? I thought these were different things.
+            Assert.Equal(12, Map.Length);
+            Assert.Equal(12, Map.GetLength(0));
+            // Assert.Equal(47, Map.GetLength(1));
         }
     }
 }

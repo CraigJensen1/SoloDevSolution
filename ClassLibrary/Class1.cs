@@ -1,4 +1,5 @@
-﻿using SaveLogic;
+﻿using System.Text.Json;
+using SaveLogic;
 
 namespace ClassLibrary
 {
@@ -47,14 +48,83 @@ namespace ClassLibrary
 
         public static bool RenderSaveMenu()
         {
-            // foreach (char[] mapRow in Map)
-            // {
-            //     Console.WriteLine(mapRow);
-            // }
-            // (int, int) playerMapPosition = MainSave.Player.MapPosition;
-            // Console.SetCursorPosition(playerMapPosition.Item2, playerMapPosition.Item1);
-            // return false;
-            return true;
+            Console.Clear();
+            string saveMenu = File.ReadAllText("./ClassLibrary/AstridClasses/Menus/SaveMenu.txt");
+            Console.WriteLine(saveMenu);
+            Console.SetCursorPosition(9, 2);
+            bool exited = false;
+            while (!exited)
+            {
+                ConsoleKeyInfo inputKey = Console.ReadKey(true);
+                exited = ProcessInput(InputType.SaveMenu, inputKey);
+            }
+            bool ExitGame;
+            switch (Console.CursorTop)
+            {
+                case 1:
+                {
+                    ExitGame = false;
+                    break;
+                }
+                case 2:
+                {
+                    ExitGame = false;
+                    break;
+                }
+                case 3:
+                {
+                    ExitGame = true;
+                    break;
+                }
+                case 4:
+                {
+                    ExitGame = true;
+                    break;
+                }
+                default:
+                {
+                    ExitGame = false;
+                    break;
+                }
+            }
+            Console.Clear();
+            if (!ExitGame)
+            {
+                foreach (char[] mapRow in Map)
+                {
+                    Console.WriteLine(mapRow);
+                }
+                (int, int) playerMapPosition = MainSave.Player.MapPosition;
+                Console.SetCursorPosition(playerMapPosition.Item2, playerMapPosition.Item1);
+            }
+            return ExitGame;
+        }
+
+        public static void RenderSaveSlotMenu()
+        {
+            int savedChoice = Console.CursorTop;
+            Console.Clear();
+            string saveSlotsMenu = File.ReadAllText(
+                "./ClassLibrary/AstridClasses/Menus/SaveSlots.txt"
+            );
+            Console.WriteLine(saveSlotsMenu);
+            Save tempSave;
+            int currentLine = 1;
+            foreach (var saveFile in Directory.GetFiles("./ClassLibrary/AstridClasses/SaveFiles"))
+            {
+                Console.SetCursorPosition(8, currentLine);
+                string rawData = File.ReadAllText(saveFile);
+                tempSave = JsonSerializer.Deserialize<Save>(rawData);
+                Console.Write(tempSave.Player.Name);
+                currentLine++;
+            }
+            Console.SetCursorPosition(8, 1);
+            bool exited = false;
+            while (!exited)
+            {
+                exited = ProcessInput(InputType.SaveSlotsMenu, Console.ReadKey(true));
+            }
+            Console.CursorTop = savedChoice;
         }
 
         public static bool ProcessInput(InputType type, ConsoleKeyInfo input)
@@ -69,6 +139,10 @@ namespace ClassLibrary
                 case InputType.SaveMenu:
                 {
                     return ProcessSaveMenuInput(input);
+                }
+                case InputType.SaveSlotsMenu:
+                {
+                    return ProcessSaveSlotsMenuInput(input);
                 }
                 case InputType.Map:
                 {
@@ -165,18 +239,69 @@ namespace ClassLibrary
             {
                 case ConsoleKey.UpArrow:
                 {
+                    switch (Console.CursorTop)
+                    {
+                        case 1:
+                        {
+                            Console.CursorTop = 4;
+                            break;
+                        }
+                        default:
+                        {
+                            Console.CursorTop--;
+                            break;
+                        }
+                    }
                     return false;
                 }
                 case ConsoleKey.DownArrow:
                 {
+                    switch (Console.CursorTop)
+                    {
+                        case 4:
+                        {
+                            Console.CursorTop = 1;
+                            break;
+                        }
+                        default:
+                        {
+                            Console.CursorTop++;
+                            break;
+                        }
+                    }
                     return false;
                 }
                 case ConsoleKey.Enter:
                 {
-                    return false;
+                    switch (Console.CursorTop)
+                    {
+                        case 1:
+                        {
+                            return true;
+                        }
+                        case 2:
+                        {
+                            RenderSaveSlotMenu();
+                            return true;
+                        }
+                        case 3:
+                        {
+                            RenderSaveSlotMenu();
+                            return true;
+                        }
+                        case 4:
+                        {
+                            return true;
+                        }
+                        default:
+                        {
+                            return false;
+                        }
+                    }
                 }
                 case ConsoleKey.Escape:
                 {
+                    Console.CursorTop = 1;
                     return true;
                 }
                 default:
@@ -186,24 +311,143 @@ namespace ClassLibrary
             }
         }
 
-        private static bool ProcessMapInput(ConsoleKeyInfo input)
+        private static bool ProcessSaveSlotsMenuInput(ConsoleKeyInfo input)
         {
             switch (input.Key)
             {
                 case ConsoleKey.UpArrow:
                 {
+                    if (Console.CursorTop == 1)
+                    {
+                        Console.CursorTop = 9;
+                    }
+                    else
+                    {
+                        Console.CursorTop--;
+                    }
                     return false;
                 }
                 case ConsoleKey.DownArrow:
                 {
+                    if (Console.CursorTop == 9)
+                    {
+                        Console.CursorTop = 1;
+                    }
+                    else
+                    {
+                        Console.CursorTop++;
+                    }
+                    return false;
+                }
+                case ConsoleKey.Enter:
+                {
+                    (int, int) savedCurrentPosition = (Console.CursorTop, Console.CursorLeft);
+                    if (
+                        File.Exists(
+                            $"./ClassLibrary/AstridClasses/SaveFiles/file{Console.CursorTop}.json"
+                        )
+                    )
+                    {
+                        Console.SetCursorPosition(0, 12);
+                        Console.Write(
+                            "This file already exists. \nWould you like to overwrite it? [y/n] "
+                        );
+                        ConsoleKeyInfo decision = Console.ReadKey(false);
+                        if (decision.Key == ConsoleKey.Y)
+                        {
+                            Console.Write(
+                                "\nYou chose to overwrite it. \nPress any key to continue"
+                            );
+                            Console.ReadKey(true);
+                            MainSave.SaveProgress(savedCurrentPosition.Item1);
+                            return true;
+                        }
+                        else if (decision.Key == ConsoleKey.N)
+                        {
+                            Console.Write(
+                                "\nYou chose not to. We'll let you pick a different slot.\nPress any key to continue"
+                            );
+                            Console.ReadKey(true);
+                            Console.SetCursorPosition(0, 12);
+                            for (int i = 0; i < 5; i++)
+                            {
+                                Console.WriteLine(
+                                    "                                                                             "
+                                );
+                            }
+                            Console.SetCursorPosition(
+                                savedCurrentPosition.Item2,
+                                savedCurrentPosition.Item1
+                            );
+                            return false;
+                        }
+                        else
+                        {
+                            Console.Write(
+                                "\nWe're not really sure what you chose.\nWe'll just let you pick a different slot.\nPress any key to continue"
+                            );
+                            Console.ReadKey(true);
+                            Console.SetCursorPosition(0, 12);
+                            for (int i = 0; i < 5; i++)
+                            {
+                                Console.WriteLine(
+                                    "                                                                             "
+                                );
+                            }
+                            Console.SetCursorPosition(
+                                savedCurrentPosition.Item2,
+                                savedCurrentPosition.Item1
+                            );
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        MainSave.SaveProgress(Console.CursorTop);
+                        return true;
+                    }
+                }
+                // case ConsoleKey.Escape:
+                // {
+                //     return true;
+                // }
+                default:
+                {
+                    return false;
+                }
+            }
+        }
+
+        private static bool ProcessMapInput(ConsoleKeyInfo input)
+        {
+            int mapRow = Console.CursorTop;
+            int mapColumn = Console.CursorLeft;
+            char currentMapSpot = Map[mapRow][mapColumn];
+            switch (input.Key)
+            {
+                case ConsoleKey.UpArrow:
+                {
+                    if (mapRow <= 0) { }
+                    // else if (Movable) {then move}
+                    return false;
+                }
+                case ConsoleKey.DownArrow:
+                {
+                    if (mapRow >= Map.Length) { }
+                    // else if (Movable) {then move}
                     return false;
                 }
                 case ConsoleKey.LeftArrow:
                 {
+                    if (mapColumn <= 0) { }
+                    // else if (Movable) {then move}
                     return false;
                 }
                 case ConsoleKey.RightArrow:
                 {
+                    if (mapColumn <= Map[mapRow].Length) { }
+                    // else if (Movable) {then move}
+                    // maybe return Movable();
                     return false;
                 }
                 case ConsoleKey.Enter:
@@ -238,6 +482,7 @@ namespace ClassLibrary
         {
             MainMenu,
             SaveMenu,
+            SaveSlotsMenu,
             Map,
         }
     }
