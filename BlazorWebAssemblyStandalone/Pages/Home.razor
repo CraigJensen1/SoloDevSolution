@@ -1,42 +1,204 @@
 ﻿@page "/"
+<PageTitle>Water Tracker</PageTitle>
 
-<h1>Daily Water Intake Tracker</h1>
-
-<h3>Add Water</h3>
-<input type="number" @bind="cupsInput" />
-<button @onclick="AddWater">Add Water</button>
-
-<h3>Set Goal</h3>
-<input type="number" @bind="goalInput" />
-<button @onclick="SetGoal">Set Goal</button>
-
-<br /><br />
-
-<button @onclick="ResetWater">Reset Water</button>
-
-<h3>Progress</h3>
-<p>Water Total: @waterTotal cups</p>
-<p>Goal: @waterGoal cups</p>
-
-@if (waterGoal > 0)
-{
-    int remaining = waterGoal - waterTotal;
-
-    if (remaining > 0)
-    {
-        <p>You need @remaining more cups.</p>
+<style>
+    body {
+        background-color: #f4f9ff;
+        font-family: Arial, sans-serif;
     }
-    else
-    {
-        <p>Goal reached or exceeded!</p>
-    }
-}
-else
-{
-    <p>Please set a goal first.</p>
-}
 
-<p>@message</p>
+    .tracker-container {
+        max-width: 750px;
+        margin: 40px auto;
+        padding: 25px;
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .title {
+        text-align: center;
+        color: #1b4f72;
+        margin-bottom: 10px;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #5d6d7e;
+        margin-bottom: 25px;
+    }
+
+    .section {
+        margin-bottom: 25px;
+        padding: 15px;
+        background-color: #eef7ff;
+        border-radius: 10px;
+    }
+
+    .section h3 {
+        margin-top: 0;
+        color: #154360;
+    }
+
+    input {
+        padding: 8px;
+        margin-right: 10px;
+        width: 130px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+    }
+
+    button {
+        padding: 8px 14px;
+        margin: 5px 5px 5px 0;
+        border: none;
+        border-radius: 6px;
+        background-color: #3498db;
+        color: white;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #2e86c1;
+    }
+
+    .reset-button {
+        background-color: #e74c3c;
+    }
+
+    .reset-button:hover {
+        background-color: #cb4335;
+    }
+
+    .clear-button {
+        background-color: #7f8c8d;
+    }
+
+    .clear-button:hover {
+        background-color: #626567;
+    }
+
+    .progress-bar-box {
+        width: 100%;
+        height: 30px;
+        background-color: #d6eaf8;
+        border-radius: 20px;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        text-align: center;
+        line-height: 30px;
+        color: white;
+        font-weight: bold;
+    }
+
+    .message-box {
+        margin-top: 20px;
+        padding: 12px;
+        background-color: #ebf5fb;
+        border-left: 5px solid #3498db;
+        border-radius: 8px;
+        color: #1b4f72;
+    }
+
+    .stats {
+        font-size: 18px;
+        margin: 8px 0;
+    }
+
+    .history-list {
+        margin-top: 10px;
+        padding-left: 20px;
+    }
+
+    .history-list li {
+        margin-bottom: 6px;
+    }
+</style>
+
+<div class="tracker-container">
+    <h1 class="title">💧 Daily Water Intake Tracker</h1>
+    <p class="subtitle">Track your water and stay hydrated each day</p>
+
+    <div class="section">
+        <h3>➕ Add Water</h3>
+        <input type="number" @bind="cupsInput" />
+        <button @onclick="AddWater">Add Water</button>
+
+        <div>
+            <button @onclick='() => QuickAdd(1)'>+1 Cup</button>
+            <button @onclick='() => QuickAdd(2)'>+2 Cups</button>
+            <button @onclick='() => QuickAdd(4)'>+4 Cups</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>🎯 Set Goal</h3>
+        <input type="number" @bind="goalInput" />
+        <button @onclick="SetGoal">Set Goal</button>
+        <button class="clear-button" @onclick="ResetGoal">Reset Goal</button>
+    </div>
+
+    <div class="section">
+        <h3>📊 Progress</h3>
+        <p class="stats">Water Total: <strong>@waterTotal</strong> cups (@totalOunces oz)</p>
+        <p class="stats">Goal: <strong>@waterGoal</strong> cups</p>
+        <p class="stats">Status: <strong>@statusText</strong></p>
+
+        @if (waterGoal > 0)
+        {
+            <p class="stats">Progress: <strong>@progressPercent%</strong></p>
+
+            <div class="progress-bar-box">
+                <div class="progress-bar-fill" style="width:@barWidth%; background-color:@progressColor;">
+                    @progressPercent%
+                </div>
+            </div>
+
+            @if (remaining > 0)
+            {
+                <p class="stats">You need <strong>@remaining</strong> more cups.</p>
+            }
+            else
+            {
+                <p class="stats"><strong>✅ Goal reached or exceeded!</strong></p>
+            }
+        }
+        else
+        {
+            <p class="stats">Please set a goal first.</p>
+        }
+    </div>
+
+    <div class="section">
+        <h3>📝 History</h3>
+
+        @if (history.Count > 0)
+        {
+            <ul class="history-list">
+                @for (int i = 0; i < history.Count; i++)
+                {
+                    <li>@history[i]</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>No water added yet.</p>
+        }
+
+        <button class="clear-button" @onclick="ClearHistory">Clear History</button>
+    </div>
+
+    <button class="reset-button" @onclick="ResetWater">Reset Water</button>
+
+    <div class="message-box">
+        @message
+    </div>
+</div>
 
 @code {
     int waterTotal = 0;
@@ -45,21 +207,127 @@ else
     int cupsInput;
     int goalInput;
 
-    string message = "";
+    string message = "Welcome! Start tracking your water today.";
+    List<string> history = new List<string>();
+
+    int remaining
+    {
+        get
+        {
+            int value = waterGoal - waterTotal;
+
+            if (value < 0)
+            {
+                return 0;
+            }
+
+            return value;
+        }
+    }
+
+    int progressPercent
+    {
+        get
+        {
+            if (waterGoal <= 0)
+            {
+                return 0;
+            }
+
+            int percent = (waterTotal * 100) / waterGoal;
+
+            if (percent > 100)
+            {
+                return 100;
+            }
+
+            return percent;
+        }
+    }
+
+    int barWidth
+    {
+        get
+        {
+            return progressPercent;
+        }
+    }
+
+    int totalOunces
+    {
+        get
+        {
+            return waterTotal * 8;
+        }
+    }
+
+    string statusText
+    {
+        get
+        {
+            if (waterGoal <= 0)
+            {
+                return "Set your goal to begin.";
+            }
+            else if (progressPercent == 0)
+            {
+                return "You have not started yet.";
+            }
+            else if (progressPercent < 50)
+            {
+                return "Good start. Keep going.";
+            }
+            else if (progressPercent < 100)
+            {
+                return "You are making great progress.";
+            }
+            else
+            {
+                return "Excellent job. Goal reached!";
+            }
+        }
+    }
+
+    string progressColor
+    {
+        get
+        {
+            if (progressPercent < 50)
+            {
+                return "#e74c3c";
+            }
+            else if (progressPercent < 100)
+            {
+                return "#f1c40f";
+            }
+            else
+            {
+                return "#2ecc71";
+            }
+        }
+    }
 
     void AddWater()
     {
         if (cupsInput > 0)
         {
             waterTotal += cupsInput;
-            message = "Water added!";
+            history.Insert(0, $"Added {cupsInput} cup(s).");
+            message = $"✅ {cupsInput} cup(s) added successfully!";
         }
         else
         {
-            message = "Invalid input. Enter a positive number.";
+            message = "⚠️ Invalid input. Enter a positive number.";
         }
 
         cupsInput = 0;
+    }
+
+    void QuickAdd(int amount)
+    {
+        waterTotal += amount;
+        history.Insert(0, $"Added {amount} cup(s).");
+        message = $"✅ {amount} cup(s) added quickly!";
     }
 
     void SetGoal()
@@ -67,19 +335,35 @@ else
         if (goalInput > 0)
         {
             waterGoal = goalInput;
-            message = "Goal set!";
+            waterTotal = 0;
+            history.Clear();
+            message = $"🎯 Your daily goal is now set to {waterGoal} cups.";
         }
         else
         {
-            message = "Invalid goal. Enter a positive number.";
+            message = "⚠️ Invalid goal. Enter a positive number.";
         }
 
         goalInput = 0;
     }
 
+    void ClearHistory()
+    {
+        history.Clear();
+        message = "📝 History cleared.";
+    }
+
     void ResetWater()
     {
         waterTotal = 0;
-        message = "Water has been reset for a new day.";
+        history.Clear();
+        message = "🔄 Water has been reset for a new day.";
+    }
+
+    void ResetGoal()
+    {
+        waterGoal = 0;
+        goalInput = 0;
+        message = "🎯 Goal has been reset.";
     }
 }
