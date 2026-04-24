@@ -9,8 +9,12 @@ namespace SaveLogic
         public int CurrentHealth { get; set; }
         public int Strength { get; set; }
         public int Defense { get; set; }
+        // public (int, int) MapPosition { get; set; }
+        public int MapPositionRow { get; set; }
+        public int MapPositionColumn { get; set; }
 
         public Player() { }
+
         public Player(string name, Gender gender)
         {
             Name = name;
@@ -20,11 +24,26 @@ namespace SaveLogic
             CurrentHealth = 20;
             Strength = 5;
             Defense = 1;
+            // MapPosition = (3, 7);
+            MapPositionRow = 3;
+            MapPositionColumn= 7;
         }
 
         public Player GetInfo()
         {
-            return new Player();
+            return new Player
+            {
+                Name = Name,
+                Gender = Gender,
+                Inventory = Inventory,
+                MaxHealth = MaxHealth,
+                CurrentHealth = CurrentHealth,
+                Defense = Defense,
+                // MapPosition = MapPosition,
+                MapPositionRow = MapPositionRow,
+                MapPositionColumn = MapPositionColumn,
+                Strength = Strength,
+            };
         }
 
         public int Attack()
@@ -38,6 +57,41 @@ namespace SaveLogic
             CurrentHealth = Math.Clamp((CurrentHealth - damageTaken), 0, MaxHealth);
             return damageTaken;
         }
+
+        public void MovePlayer(Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.Up:
+                {
+                    // MapPosition = (MapPosition.Item1 - 1, MapPosition.Item2);
+                    MapPositionRow--;
+                    break;
+                }
+                case Direction.Down:
+                {
+                    // MapPosition = (MapPosition.Item1 + 1, MapPosition.Item2);
+                    MapPositionRow++;
+                    break;
+                }
+                case Direction.Right:
+                {
+                    // MapPosition = (MapPosition.Item1, MapPosition.Item2 + 1);
+                    MapPositionColumn++;
+                    break;
+                }
+                case Direction.Left:
+                {
+                    // MapPosition = (MapPosition.Item1, MapPosition.Item2 - 1);
+                    MapPositionColumn--;
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
+        }
     }
 
     public enum Gender
@@ -45,5 +99,13 @@ namespace SaveLogic
         Female,
         Male,
         Non_Binary,
+    }
+
+    public enum Direction
+    {
+        Up,
+        Down,
+        Right, // -->
+        Left, // <--
     }
 }

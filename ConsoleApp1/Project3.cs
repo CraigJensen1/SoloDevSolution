@@ -2,7 +2,7 @@
 
 internal static class Project3
 {
-    static void Main()
+    internal static void Run()
     {
         int waterTotal = 0;
         int waterGoal = 0;

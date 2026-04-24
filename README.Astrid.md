@@ -1,6 +1,6 @@
 # Astrid's game that has fighting and map exploration
 *The best name for a game you've ever heard.*
-*By Astrid D. Kridelbaugh (Cranney) (It's just me doing this one)*
+*Brought to you by Astrid D. Kridelbaugh (Cranney) (It's just me doing this one)*
 
 ## What it does:
 

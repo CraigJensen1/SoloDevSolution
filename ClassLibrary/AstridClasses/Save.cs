@@ -35,5 +35,26 @@ namespace SaveLogic
             }
             File.WriteAllText($"./ClassLibrary/AstridClasses/SaveFiles/{fileName}", saveData);
         }
+
+        public void LoadProgress(int saveSlot, bool test = false)
+        {
+            Save loadedSaveData = new();
+            string fileName = $"file{saveSlot}.json";
+            string fileData;
+            if (test)
+            {
+                fileData = File.ReadAllText($"./{fileName}");
+                loadedSaveData = JsonSerializer.Deserialize<Save>(fileData);
+            }
+            else
+            {
+                fileData = File.ReadAllText($"./ClassLibrary/AstridClasses/SaveFiles/{fileName}");
+                loadedSaveData = JsonSerializer.Deserialize<Save>(fileData);
+            }
+            
+            Player = loadedSaveData.Player;
+            StoryProgress = loadedSaveData.StoryProgress;
+            MapSecretsDiscovered = loadedSaveData.MapSecretsDiscovered;
+        }
     }
 }
