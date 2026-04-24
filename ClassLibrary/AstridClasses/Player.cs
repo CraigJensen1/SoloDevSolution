@@ -51,6 +51,37 @@ namespace SaveLogic
             CurrentHealth = Math.Clamp((CurrentHealth - damageTaken), 0, MaxHealth);
             return damageTaken;
         }
+
+        public void MovePlayer(Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.Up:
+                {
+                    MapPosition = (MapPosition.Item1 - 1, MapPosition.Item2);
+                    break;
+                }
+                case Direction.Down:
+                {
+                    MapPosition = (MapPosition.Item1 + 1, MapPosition.Item2);
+                    break;
+                }
+                case Direction.Right:
+                {
+                    MapPosition = (MapPosition.Item1, MapPosition.Item2 + 1);
+                    break;
+                }
+                case Direction.Left:
+                {
+                    MapPosition = (MapPosition.Item1, MapPosition.Item2 - 1);
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
+        }
     }
 
     public enum Gender
@@ -58,5 +89,13 @@ namespace SaveLogic
         Female,
         Male,
         Non_Binary,
+    }
+
+    public enum Direction
+    {
+        Up,
+        Down,
+        Right, // -->
+        Left, // <--
     }
 }

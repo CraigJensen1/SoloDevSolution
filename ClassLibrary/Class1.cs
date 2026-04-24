@@ -422,33 +422,64 @@ namespace ClassLibrary
         {
             int mapRow = Console.CursorTop;
             int mapColumn = Console.CursorLeft;
-            char currentMapSpot = Map[mapRow][mapColumn];
+            bool mapCharMovable = false;
             switch (input.Key)
             {
                 case ConsoleKey.UpArrow:
                 {
                     if (mapRow <= 0) { }
-                    // else if (Movable) {then move}
-                    return false;
+                    else
+                    {
+                        mapCharMovable = IsMovable(Map[mapRow - 1][mapColumn]);
+                        if (mapCharMovable)
+                        {
+                            Console.CursorTop--;
+                            MainSave.Player.MovePlayer(Direction.Up);
+                        }
+                    }
+                    return IsHole(MainSave.Player.MapPosition);
                 }
                 case ConsoleKey.DownArrow:
                 {
                     if (mapRow >= Map.Length) { }
-                    // else if (Movable) {then move}
-                    return false;
+                    else
+                    {
+                        mapCharMovable = IsMovable(Map[mapRow + 1][mapColumn]);
+                        if (mapCharMovable)
+                        {
+                            Console.CursorTop++;
+                            MainSave.Player.MovePlayer(Direction.Down);
+                        }
+                    }
+                    return IsHole(MainSave.Player.MapPosition);
                 }
                 case ConsoleKey.LeftArrow:
                 {
                     if (mapColumn <= 0) { }
-                    // else if (Movable) {then move}
-                    return false;
+                    else
+                    {
+                        mapCharMovable = IsMovable(Map[mapRow][mapColumn - 1]);
+                        if (mapCharMovable)
+                        {
+                            Console.CursorLeft--;
+                            MainSave.Player.MovePlayer(Direction.Left);
+                        }
+                    }
+                    return IsHole(MainSave.Player.MapPosition);
                 }
                 case ConsoleKey.RightArrow:
                 {
-                    if (mapColumn <= Map[mapRow].Length) { }
-                    // else if (Movable) {then move}
-                    // maybe return Movable();
-                    return false;
+                    if (mapColumn >= Map[mapRow].Length) { }
+                    else
+                    {
+                        mapCharMovable = IsMovable(Map[mapRow][mapColumn + 1]);
+                        if (mapCharMovable)
+                        {
+                            Console.CursorLeft++;
+                            MainSave.Player.MovePlayer(Direction.Right);
+                        }
+                    }
+                    return IsHole(MainSave.Player.MapPosition);
                 }
                 case ConsoleKey.Enter:
                 {
@@ -460,7 +491,7 @@ namespace ClassLibrary
                 }
                 default:
                 {
-                    return false;
+                    return mapCharMovable;
                 }
             }
         }
@@ -473,10 +504,95 @@ namespace ClassLibrary
         //   You die. The space character signifies a hole/empty space. You can walk into it, doing so will cause you to fall and die.
         // = Nothing. This signifies the part of a bridge that you can walk on. It does nothing else for now.
         // | ‒ Signals a scene transition, allowing you to traverse to the next area over, depending on where it is located.
+        // I'm going to make these ones immovable for now.
         // Immovable characters: █ # \ / _ ‾
         // █ An unbreakable wall. Cannot be passed through or over.
         // # A breakable wall. It is possible to remove this and replace it with . | or ‒ to signal traversing to the next area.
         // \ / _ ‾ These are pieces of bridge, the parts you can not traverse on top of. These are the supports at the side you hold on to when crossing the bridge.
+
+        private static bool IsMovable(char mapSpot)
+        {
+            switch (mapSpot)
+            {
+                // Movable characters:
+                case '.':
+                {
+                    return true;
+                }
+                case ',':
+                {
+                    return true;
+                }
+                case '☐':
+                {
+                    return true;
+                }
+                case ' ':
+                {
+                    return true;
+                }
+                case '=':
+                {
+                    return true;
+                }
+                case '|':
+                {
+                    // return true;
+                    return false;
+                }
+                case '‒':
+                {
+                    // return true;
+                    return false;
+                }
+                // Immovable characters
+                case '█':
+                {
+                    return false;
+                }
+                case '#':
+                {
+                    return false;
+                }
+                case '\\':
+                {
+                    return false;
+                }
+                case '/':
+                {
+                    return false;
+                }
+                case '_':
+                {
+                    return false;
+                }
+                case '‾':
+                {
+                    return false;
+                }
+                default:
+                {
+                    return false;
+                }
+            }
+        }
+
+        private static bool IsHole((int, int) position)
+        {
+            char currentMapSpot = Map[position.Item1][position.Item2];
+            if (currentMapSpot == ' ')
+            {
+                Console.Clear();
+                Console.WriteLine("You fell in a hole and died.");
+                Console.ReadKey(true);
+                Console.Clear();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         public enum InputType
         {

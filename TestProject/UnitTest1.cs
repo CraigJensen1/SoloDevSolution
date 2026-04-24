@@ -72,6 +72,9 @@ namespace TestProject
             Assert.Equal(12, Map.Length);
             Assert.Equal(12, Map.GetLength(0));
             // Assert.Equal(47, Map.GetLength(1));
+            Assert.Equal(46, Map[0].Length);
+            Assert.Equal(46, Map[1].Length);
+            Assert.Equal(46, Map[3].Length);
         }
     }
 }
