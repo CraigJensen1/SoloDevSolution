@@ -9,7 +9,9 @@ namespace SaveLogic
         public int CurrentHealth { get; set; }
         public int Strength { get; set; }
         public int Defense { get; set; }
-        public (int, int) MapPosition { get; set; }
+        // public (int, int) MapPosition { get; set; }
+        public int MapPositionRow { get; set; }
+        public int MapPositionColumn { get; set; }
 
         public Player() { }
 
@@ -22,7 +24,9 @@ namespace SaveLogic
             CurrentHealth = 20;
             Strength = 5;
             Defense = 1;
-            MapPosition = (3, 7);
+            // MapPosition = (3, 7);
+            MapPositionRow = 3;
+            MapPositionColumn= 7;
         }
 
         public Player GetInfo()
@@ -35,7 +39,9 @@ namespace SaveLogic
                 MaxHealth = MaxHealth,
                 CurrentHealth = CurrentHealth,
                 Defense = Defense,
-                MapPosition = MapPosition,
+                // MapPosition = MapPosition,
+                MapPositionRow = MapPositionRow,
+                MapPositionColumn = MapPositionColumn,
                 Strength = Strength,
             };
         }
@@ -58,22 +64,26 @@ namespace SaveLogic
             {
                 case Direction.Up:
                 {
-                    MapPosition = (MapPosition.Item1 - 1, MapPosition.Item2);
+                    // MapPosition = (MapPosition.Item1 - 1, MapPosition.Item2);
+                    MapPositionRow--;
                     break;
                 }
                 case Direction.Down:
                 {
-                    MapPosition = (MapPosition.Item1 + 1, MapPosition.Item2);
+                    // MapPosition = (MapPosition.Item1 + 1, MapPosition.Item2);
+                    MapPositionRow++;
                     break;
                 }
                 case Direction.Right:
                 {
-                    MapPosition = (MapPosition.Item1, MapPosition.Item2 + 1);
+                    // MapPosition = (MapPosition.Item1, MapPosition.Item2 + 1);
+                    MapPositionColumn++;
                     break;
                 }
                 case Direction.Left:
                 {
-                    MapPosition = (MapPosition.Item1, MapPosition.Item2 - 1);
+                    // MapPosition = (MapPosition.Item1, MapPosition.Item2 - 1);
+                    MapPositionColumn--;
                     break;
                 }
                 default:

@@ -7,7 +7,7 @@ namespace ClassLibrary
 
     public static class Astrid
     {
-        public static Save MainSave;
+        public static Save MainSave = new();
         public static char[][] Map;
 
         public static void RenderMainMenu()
@@ -38,7 +38,10 @@ namespace ClassLibrary
             {
                 Console.WriteLine(mapRow);
             }
-            (int, int) playerMapPosition = MainSave.Player.MapPosition;
+            (int, int) playerMapPosition = (
+                MainSave.Player.MapPositionRow,
+                MainSave.Player.MapPositionColumn
+            );
             Console.SetCursorPosition(playerMapPosition.Item2, playerMapPosition.Item1);
             while (!exited)
             {
@@ -94,10 +97,36 @@ namespace ClassLibrary
                 {
                     Console.WriteLine(mapRow);
                 }
-                (int, int) playerMapPosition = MainSave.Player.MapPosition;
+                (int, int) playerMapPosition = (
+                    MainSave.Player.MapPositionRow,
+                    MainSave.Player.MapPositionColumn
+                );
                 Console.SetCursorPosition(playerMapPosition.Item2, playerMapPosition.Item1);
             }
             return ExitGame;
+        }
+
+        public static void RenderContinueMenu()
+        {
+            Console.Clear();
+            string slotsMenu = File.ReadAllText("./ClassLibrary/AstridClasses/Menus/SaveSlots.txt");
+            Console.WriteLine(slotsMenu);
+            int currentLine = 1;
+            Save tempSave;
+            foreach (var saveFile in Directory.GetFiles("./ClassLibrary/AstridClasses/SaveFiles"))
+            {
+                Console.SetCursorPosition(8, currentLine);
+                string rawData = File.ReadAllText(saveFile);
+                tempSave = JsonSerializer.Deserialize<Save>(rawData);
+                Console.Write(tempSave.Player.Name);
+                currentLine++;
+            }
+            Console.SetCursorPosition(8, 1);
+            bool exited = false;
+            while (!exited)
+            {
+                exited = ProcessInput(InputType.ContinueMenu, Console.ReadKey(true));
+            }
         }
 
         public static void RenderSaveSlotMenu()
@@ -147,6 +176,10 @@ namespace ClassLibrary
                 case InputType.Map:
                 {
                     return ProcessMapInput(input);
+                }
+                case InputType.ContinueMenu:
+                {
+                    return ProcessContinueMenuInput(input);
                 }
                 default:
                 {
@@ -206,6 +239,8 @@ namespace ClassLibrary
                         case 3: // Continue
                         {
                             // MainSave.LoadProgress(1);
+                            RenderContinueMenu();
+                            RenderMap();
                             break;
                         }
                         case 4: // Exit
@@ -418,6 +453,76 @@ namespace ClassLibrary
             }
         }
 
+        private static bool ProcessContinueMenuInput(ConsoleKeyInfo input)
+        {
+            switch (input.Key)
+            {
+                case ConsoleKey.UpArrow:
+                {
+                    if (Console.CursorTop == 1)
+                    {
+                        Console.CursorTop = 9;
+                    }
+                    else
+                    {
+                        Console.CursorTop--;
+                    }
+                    return false;
+                }
+                case ConsoleKey.DownArrow:
+                {
+                    if (Console.CursorTop == 9)
+                    {
+                        Console.CursorTop = 1;
+                    }
+                    else
+                    {
+                        Console.CursorTop++;
+                    }
+                    return false;
+                }
+                case ConsoleKey.Enter:
+                {
+                    (int, int) savedCurrentPosition = (Console.CursorTop, Console.CursorLeft);
+                    if (
+                        File.Exists(
+                            $"./ClassLibrary/AstridClasses/SaveFiles/file{Console.CursorTop}.json"
+                        )
+                    )
+                    {
+                        MainSave.LoadProgress(Console.CursorTop);
+                        return true;
+                    }
+                    else
+                    {
+                        Console.SetCursorPosition(0, 12);
+                        Console.Write("There is no file in that slot.\nPress any key to continue");
+                        Console.ReadKey(true);
+                        Console.SetCursorPosition(0, 12);
+                        Console.WriteLine(
+                            "                                                                                "
+                        );
+                        Console.WriteLine(
+                            "                                                                                "
+                        );
+                        Console.SetCursorPosition(
+                            savedCurrentPosition.Item2,
+                            savedCurrentPosition.Item1
+                        );
+                        return false;
+                    }
+                }
+                // case ConsoleKey.Escape:
+                //     {
+                //         return true;
+                //     }
+                default:
+                {
+                    return false;
+                }
+            }
+        }
+
         private static bool ProcessMapInput(ConsoleKeyInfo input)
         {
             int mapRow = Console.CursorTop;
@@ -437,7 +542,9 @@ namespace ClassLibrary
                             MainSave.Player.MovePlayer(Direction.Up);
                         }
                     }
-                    return IsHole(MainSave.Player.MapPosition);
+                    return IsHole(
+                        (MainSave.Player.MapPositionRow, MainSave.Player.MapPositionColumn)
+                    );
                 }
                 case ConsoleKey.DownArrow:
                 {
@@ -451,7 +558,9 @@ namespace ClassLibrary
                             MainSave.Player.MovePlayer(Direction.Down);
                         }
                     }
-                    return IsHole(MainSave.Player.MapPosition);
+                    return IsHole(
+                        (MainSave.Player.MapPositionRow, MainSave.Player.MapPositionColumn)
+                    );
                 }
                 case ConsoleKey.LeftArrow:
                 {
@@ -465,7 +574,9 @@ namespace ClassLibrary
                             MainSave.Player.MovePlayer(Direction.Left);
                         }
                     }
-                    return IsHole(MainSave.Player.MapPosition);
+                    return IsHole(
+                        (MainSave.Player.MapPositionRow, MainSave.Player.MapPositionColumn)
+                    );
                 }
                 case ConsoleKey.RightArrow:
                 {
@@ -479,7 +590,9 @@ namespace ClassLibrary
                             MainSave.Player.MovePlayer(Direction.Right);
                         }
                     }
-                    return IsHole(MainSave.Player.MapPosition);
+                    return IsHole(
+                        (MainSave.Player.MapPositionRow, MainSave.Player.MapPositionColumn)
+                    );
                 }
                 case ConsoleKey.Enter:
                 {
@@ -579,7 +692,15 @@ namespace ClassLibrary
 
         private static bool IsHole((int, int) position)
         {
-            char currentMapSpot = Map[position.Item1][position.Item2];
+            char currentMapSpot = '\u0000';
+            try
+            {
+                currentMapSpot = Map[position.Item1][position.Item2];
+            }
+            catch
+            {
+                return false;
+            }
             if (currentMapSpot == ' ')
             {
                 Console.Clear();
@@ -599,6 +720,7 @@ namespace ClassLibrary
             MainMenu,
             SaveMenu,
             SaveSlotsMenu,
+            ContinueMenu,
             Map,
         }
     }

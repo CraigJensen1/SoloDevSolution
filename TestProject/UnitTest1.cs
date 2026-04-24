@@ -1,4 +1,5 @@
-﻿using SaveLogic;
+﻿using System.Text.Json;
+using SaveLogic;
 using static ClassLibrary.Astrid;
 
 namespace TestProject
@@ -25,8 +26,22 @@ namespace TestProject
             Assert.Equal("Test", TestSave2.Player.Name);
             Assert.Equal(Gender.Non_Binary, TestSave2.Player.Gender);
             // Assert.Equal(new Player("Test", Gender.Non_Binary), TestSave2.Player);
-            Assert.Equal(0, TestSave2.StoryProgress);
-            Assert.Equal([], TestSave2.MapSecretsDiscovered);
+            Assert.Equal(0, TestSave.StoryProgress);
+            Assert.Equal([], TestSave.MapSecretsDiscovered);
+
+            // Assert.Equal(3, TestSave.Player.MapPosition.Item1);
+            // Assert.Equal(7, TestSave.Player.MapPosition.Item2);
+
+            // Assert.Equal(3, TestSave2.Player.MapPosition.Item1);
+            // Assert.Equal(7, TestSave2.Player.MapPosition.Item2);
+
+            var o = new JsonSerializerOptions { IncludeFields = true };
+            (int, int) numbers = (4, 5);
+            string json = JsonSerializer.Serialize(numbers, o);
+            numbers = JsonSerializer.Deserialize<(int, int)>(json);
+            // Assert.Equal((4, 5), numbers);
+            // Assert.Equal((4,5), JsonSerializer.Serialize((4,5), options));
+            // Console.WriteLine(JsonSerializer.Serialize((4,5), options));
         }
 
         [Fact]
@@ -35,6 +50,8 @@ namespace TestProject
             Player player = TestPlayer.GetInfo();
             Assert.Equal("Test", player.Name);
             Assert.Equal(Gender.Non_Binary, player.Gender);
+            // Assert.Equal(3, player.MapPosition.Item1);
+            // Assert.Equal(7, player.MapPosition.Item2);
         }
 
         [Fact]
@@ -67,7 +84,7 @@ namespace TestProject
             //     mapLines[3].ToCharArray().ToString()
             // );
             Assert.Equal(expectedMapRow, Map[3]);
-            char[] characters = [ ',', '.', 'i' ];
+            char[] characters = [',', '.', 'i'];
             Assert.Equal(",.i", characters); // This test passes. How? I thought these were different things.
             Assert.Equal(12, Map.Length);
             Assert.Equal(12, Map.GetLength(0));
